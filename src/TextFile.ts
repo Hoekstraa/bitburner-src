@@ -12,43 +12,33 @@ export class TextFile implements ContentFile {
   /** The content of the file. */
   text: string;
 
-  timeOfModification: number;
-  timeOfBirth: number;
+  // Used for the Remote File API,
+  // to resolve conflicts when synchronizing files outside the game
+  #fileMetadata: FileMetadata;
+
+  get metadata(): FileMetadata {
+    return this.#fileMetadata;
+  }
 
   // Shared interface on Script and TextFile for accessing content
   get content() {
+    this.#fileMetadata = this.#fileMetadata.read();
     return this.text;
   }
   set content(text: string) {
+    this.#fileMetadata = this.#fileMetadata.edit();
     this.text = text;
   }
 
   constructor(filename = "default.txt" as TextFilePath, txt = "") {
     this.filename = filename;
     this.text = txt;
-    const time = Date.now();
-    this.timeOfBirth = time;
-    this.timeOfModification = time;
+    this.#fileMetadata = FileMetadata.new(filename);
   }
 
   /** Serialize the current file to a JSON save state. */
   toJSON(): IReviverValue {
     return Generic_toJSON("TextFile", this);
-  }
-
-  /** Set the time of modification metadata to the current time.*/
-  updateTimeOfModification(): number {
-    this.timeOfModification = Date.now();
-    return this.timeOfModification;
-  }
-
-  /** Retrieve metadata of the file. */
-  metadata(): FileMetadata {
-    return {
-      filename: this.filename,
-      timeOfModification: this.timeOfModification,
-      timeOfBirth: this.timeOfBirth,
-    };
   }
 
   deleteFromServer(server: BaseServer): boolean {

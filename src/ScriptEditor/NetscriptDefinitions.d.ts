@@ -6837,12 +6837,12 @@ export interface NS {
    * from a text file (.txt) or script (.js or .script).
    *
    * This function will return the metadata associated with the specified file.
-   * If the file does not exist, TODO will be returned.
+   * If the file does not exist, nothing will be returned.
    *
    * @param filename - Name of the file to read the metadata from.
    * @Returns The FileMetadata of the file.
    */
-  fileMetadata(filename: string): FileMetadata;
+  fileMetadata(filename: string): FileMetadata | void;
 
   /**
    * Get a copy of the data from a port without popping it.

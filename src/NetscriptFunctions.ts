@@ -1379,11 +1379,10 @@ export const ns: InternalAPI<NSFull> = {
     return server.getContentFile(path)?.content ?? "";
   },
   fileMetadata: (ctx) => (_filename) => {
-    const empty = { filename: "", timeOfModification: 0, timeOfBirth: 0 };
     const path = helpers.filePath(ctx, "filename", _filename);
-    if (!hasScriptExtension(path) && !hasTextExtension(path)) return empty;
+    if (!hasScriptExtension(path) && !hasTextExtension(path)) return;
     const server = ctx.workerScript.getServer();
-    return server.getContentFile(path)?.metadata() ?? empty;
+    return server.getContentFile(path)?.metadata ?? undefined;
   },
   peek: (ctx) => (_portNumber) => {
     const portNumber = helpers.portNumber(ctx, _portNumber);

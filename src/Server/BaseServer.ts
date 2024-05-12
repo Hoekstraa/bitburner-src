@@ -256,7 +256,6 @@ export abstract class BaseServer implements IServer {
     if (script) {
       // content setter handles module invalidation
       script.content = code;
-      script.updateTimeOfModification();
       return { overwritten: true };
     }
 
@@ -274,7 +273,6 @@ export abstract class BaseServer implements IServer {
     // overWrite if already exists
     if (existingFile) {
       existingFile.text = txt;
-      existingFile.updateTimeOfModification();
       return { overwritten: true };
     }
 

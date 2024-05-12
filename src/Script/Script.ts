@@ -17,8 +17,11 @@ export class Script implements ContentFile {
 
   // Used for the Remote File API,
   // to resolve conflicts when synchronizing files outside the game
-  timeOfModification: number;
-  timeOfBirth: number;
+  #fileMetadata: FileMetadata;
+
+  get metadata(): FileMetadata {
+    return this.#fileMetadata;
+  }
 
   // Ram calculation, only exists after first poll of ram cost after updating
   ramUsage: number | null = null;
@@ -37,22 +40,21 @@ export class Script implements ContentFile {
   dependencies = new Map<ScriptURL, Script>();
 
   get content() {
+    this.#fileMetadata = this.#fileMetadata.read();
     return this.code;
   }
   set content(newCode: string) {
+    this.#fileMetadata = this.#fileMetadata.edit();
     if (this.code === newCode) return;
     this.code = newCode;
     this.invalidateModule();
   }
 
-  constructor(fn = "default.js" as ScriptFilePath, code = "", server = "") {
-    this.filename = fn;
+  constructor(filename = "default.js" as ScriptFilePath, code = "", server = "") {
+    this.filename = filename;
     this.code = code;
     this.server = server; // hostname of server this script is on
-
-    const time = Date.now();
-    this.timeOfModification = time;
-    this.timeOfBirth = time;
+    this.#fileMetadata = FileMetadata.new(filename);
   }
 
   /** Invalidates the current script module and related data, e.g. when modifying the file. */
@@ -93,21 +95,6 @@ export class Script implements ContentFile {
 
     this.ramUsage = null;
     this.ramCalculationError = ramCalc.errorMessage ?? null;
-  }
-
-  /** Set the time of modification metadata to the current time.*/
-  updateTimeOfModification(): number {
-    this.timeOfModification = Date.now();
-    return this.timeOfModification;
-  }
-
-  /** Retrieve metadata of the file. */
-  metadata(): FileMetadata {
-    return {
-      filename: this.filename,
-      timeOfModification: this.timeOfModification,
-      timeOfBirth: this.timeOfBirth,
-    };
   }
 
   /** Remove script from server. Fails if the provided server isn't the server for this script. */
