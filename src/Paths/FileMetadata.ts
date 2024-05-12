@@ -20,28 +20,4 @@ export class FileMetadata {
     const now = Date.now();
     return new FileMetadata(this.filename, this.timeOfAccess, now, now, this.timeOfBirth);
   }
-
-  copy(newFileName: string): FileMetadata {
-    const now = Date.now();
-    return new FileMetadata(newFileName, now, now, now, now);
-  }
-
-  copyOnto(otherFileMetadata: FileMetadata): FileMetadata {
-    const now = Date.now();
-    return new FileMetadata(
-      otherFileMetadata.filename,
-      otherFileMetadata.timeOfAccess,
-      now,
-      now,
-      otherFileMetadata.timeOfBirth,
-    );
-  }
-
-  move(newFileName: string): FileMetadata {
-    return new FileMetadata(newFileName, this.timeOfAccess, this.timeOfModification, Date.now(), this.timeOfBirth);
-  }
-
-  moveOnto(newFileName: string): FileMetadata {
-    return new FileMetadata(newFileName, this.timeOfAccess, this.timeOfModification, Date.now(), this.timeOfBirth);
-  }
 }
