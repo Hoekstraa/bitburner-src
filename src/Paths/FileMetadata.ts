@@ -1,21 +1,16 @@
 export class FileMetadata {
-  constructor(
-    readonly filename: string,
-    readonly timeOfAccess: number,
-    readonly timeOfModification: number,
-    readonly timeOfBirth: number,
-  ) {}
+  constructor(readonly timeOfAccess: number, readonly timeOfModification: number, readonly timeOfBirth: number) {}
 
-  static new(filename: string): FileMetadata {
+  static new(): FileMetadata {
     const now = Date.now();
-    return new FileMetadata(filename, now, now, now);
+    return new FileMetadata(now, now, now);
   }
 
   read(): FileMetadata {
-    return new FileMetadata(this.filename, Date.now(), this.timeOfModification, this.timeOfBirth);
+    return new FileMetadata(Date.now(), this.timeOfModification, this.timeOfBirth);
   }
 
   edit(): FileMetadata {
-    return new FileMetadata(this.filename, this.timeOfAccess, Date.now(), this.timeOfBirth);
+    return new FileMetadata(this.timeOfAccess, Date.now(), this.timeOfBirth);
   }
 }

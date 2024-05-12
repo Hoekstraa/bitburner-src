@@ -18,7 +18,7 @@ export class TextFile implements ContentFile {
 
   get metadata(): object {
     return {
-      filename: this.#fileMetadata.filename,
+      filename: this.filename,
       timeOfAccess: this.#fileMetadata.timeOfAccess,
       timeOfModification: this.#fileMetadata.timeOfModification,
       timeOfBirth: this.#fileMetadata.timeOfBirth,
@@ -38,7 +38,7 @@ export class TextFile implements ContentFile {
   constructor(filename = "default.txt" as TextFilePath, txt = "") {
     this.filename = filename;
     this.text = txt;
-    this.#fileMetadata = FileMetadata.new(filename);
+    this.#fileMetadata = FileMetadata.new();
   }
 
   /** Serialize the current file to a JSON save state. */

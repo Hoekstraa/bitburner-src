@@ -21,7 +21,7 @@ export class Script implements ContentFile {
 
   get metadata(): object {
     return {
-      filename: this.#fileMetadata.filename,
+      filename: this.filename,
       timeOfAccess: this.#fileMetadata.timeOfAccess,
       timeOfModification: this.#fileMetadata.timeOfModification,
       timeOfBirth: this.#fileMetadata.timeOfBirth,
@@ -59,7 +59,7 @@ export class Script implements ContentFile {
     this.filename = filename;
     this.code = code;
     this.server = server; // hostname of server this script is on
-    this.#fileMetadata = FileMetadata.new(filename);
+    this.#fileMetadata = FileMetadata.new();
   }
 
   /** Invalidates the current script module and related data, e.g. when modifying the file. */
