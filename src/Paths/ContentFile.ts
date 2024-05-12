@@ -8,7 +8,7 @@ export type ContentFilePath = ScriptFilePath | TextFilePath;
 export interface ContentFile {
   filename: ContentFilePath;
   content: string;
-  metadata: FileMetadata;
+  metadata: object;
   deleteFromServer: (server: BaseServer) => boolean;
 }
 export type ContentFileMap = Map<ContentFilePath, ContentFile>;

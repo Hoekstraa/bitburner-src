@@ -19,8 +19,14 @@ export class Script implements ContentFile {
   // to resolve conflicts when synchronizing files outside the game
   #fileMetadata: FileMetadata;
 
-  get metadata(): FileMetadata {
-    return Object.freeze(this.#fileMetadata);
+  get metadata(): object {
+    return {
+      filename: this.#fileMetadata.filename,
+      timeOfAccess: this.#fileMetadata.timeOfAccess,
+      timeOfModification: this.#fileMetadata.timeOfModification,
+      timeOfChange: this.#fileMetadata.timeOfChange,
+      timeOfBirth: this.#fileMetadata.timeOfBirth,
+    };
   }
 
   // Ram calculation, only exists after first poll of ram cost after updating
