@@ -21,7 +21,6 @@ export class TextFile implements ContentFile {
       filename: this.#fileMetadata.filename,
       timeOfAccess: this.#fileMetadata.timeOfAccess,
       timeOfModification: this.#fileMetadata.timeOfModification,
-      timeOfChange: this.#fileMetadata.timeOfChange,
       timeOfBirth: this.#fileMetadata.timeOfBirth,
     };
   }
