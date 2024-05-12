@@ -2,6 +2,7 @@ import { BaseServer } from "./Server/BaseServer";
 import { Generic_fromJSON, Generic_toJSON, IReviverValue, constructorsForReviver } from "./utils/JSONReviver";
 import { TextFilePath } from "./Paths/TextFilePath";
 import { ContentFile } from "./Paths/ContentFile";
+import { FileMetadata } from "./Paths/FileMetadata";
 
 /** Represents a plain text file that is typically stored on a server. */
 export class TextFile implements ContentFile {
@@ -39,6 +40,15 @@ export class TextFile implements ContentFile {
   updateTimeOfModification(): number {
     this.timeOfModification = Date.now();
     return this.timeOfModification;
+  }
+
+  /** Retrieve metadata of the file. */
+  metadata(): FileMetadata {
+    return {
+      filename: this.filename,
+      timeOfModification: this.timeOfModification,
+      timeOfBirth: this.timeOfBirth,
+    };
   }
 
   deleteFromServer(server: BaseServer): boolean {

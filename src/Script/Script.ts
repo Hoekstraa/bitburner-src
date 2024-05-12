@@ -6,6 +6,7 @@ import { roundToTwo } from "../utils/helpers/roundToTwo";
 import { RamCostConstants } from "../Netscript/RamCostGenerator";
 import { ScriptFilePath } from "../Paths/ScriptFilePath";
 import { ContentFile } from "../Paths/ContentFile";
+import { FileMetadata } from "../Paths/FileMetadata";
 
 /** A script file as a file on a server.
  * For the execution of a script, see RunningScript and WorkerScript */
@@ -98,6 +99,15 @@ export class Script implements ContentFile {
   updateTimeOfModification(): number {
     this.timeOfModification = Date.now();
     return this.timeOfModification;
+  }
+
+  /** Retrieve metadata of the file. */
+  metadata(): FileMetadata {
+    return {
+      filename: this.filename,
+      timeOfModification: this.timeOfModification,
+      timeOfBirth: this.timeOfBirth,
+    };
   }
 
   /** Remove script from server. Fails if the provided server isn't the server for this script. */
