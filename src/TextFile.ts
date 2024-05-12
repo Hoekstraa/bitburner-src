@@ -17,7 +17,7 @@ export class TextFile implements ContentFile {
   #fileMetadata: FileMetadata;
 
   get metadata(): FileMetadata {
-    return this.#fileMetadata;
+    return Object.freeze(this.#fileMetadata);
   }
 
   // Shared interface on Script and TextFile for accessing content

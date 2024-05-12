@@ -20,7 +20,7 @@ export class Script implements ContentFile {
   #fileMetadata: FileMetadata;
 
   get metadata(): FileMetadata {
-    return this.#fileMetadata;
+    return Object.freeze(this.#fileMetadata);
   }
 
   // Ram calculation, only exists after first poll of ram cost after updating
