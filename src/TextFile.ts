@@ -11,6 +11,9 @@ export class TextFile implements ContentFile {
   /** The content of the file. */
   text: string;
 
+  timeOfModification: number;
+  timeOfBirth: number;
+
   // Shared interface on Script and TextFile for accessing content
   get content() {
     return this.text;
@@ -22,11 +25,20 @@ export class TextFile implements ContentFile {
   constructor(filename = "default.txt" as TextFilePath, txt = "") {
     this.filename = filename;
     this.text = txt;
+    const time = Date.now();
+    this.timeOfBirth = time;
+    this.timeOfModification = time;
   }
 
   /** Serialize the current file to a JSON save state. */
   toJSON(): IReviverValue {
     return Generic_toJSON("TextFile", this);
+  }
+
+  /** Set the time of modification metadata to the current time.*/
+  updateTimeOfModification(): number {
+    this.timeOfModification = Date.now();
+    return this.timeOfModification;
   }
 
   deleteFromServer(server: BaseServer): boolean {

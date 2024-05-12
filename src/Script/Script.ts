@@ -14,6 +14,11 @@ export class Script implements ContentFile {
   filename: ScriptFilePath;
   server: string;
 
+  // Used for the Remote File API,
+  // to resolve conflicts when synchronizing files outside the game
+  timeOfModification: number;
+  timeOfBirth: number;
+
   // Ram calculation, only exists after first poll of ram cost after updating
   ramUsage: number | null = null;
   ramUsageEntries: RamUsageEntry[] = [];
@@ -43,6 +48,10 @@ export class Script implements ContentFile {
     this.filename = fn;
     this.code = code;
     this.server = server; // hostname of server this script is on
+
+    const time = Date.now();
+    this.timeOfModification = time;
+    this.timeOfBirth = time;
   }
 
   /** Invalidates the current script module and related data, e.g. when modifying the file. */
@@ -83,6 +92,12 @@ export class Script implements ContentFile {
 
     this.ramUsage = null;
     this.ramCalculationError = ramCalc.errorMessage ?? null;
+  }
+
+  /** Set the time of modification metadata to the current time.*/
+  updateTimeOfModification(): number {
+    this.timeOfModification = Date.now();
+    return this.timeOfModification;
   }
 
   /** Remove script from server. Fails if the provided server isn't the server for this script. */
