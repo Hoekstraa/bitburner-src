@@ -36,44 +36,44 @@ export class Script implements ContentFile {
   dependencies = new Map<ScriptURL, Script>();
 
   get content() {
-	this.metadata.read();
-	return this.code;
+    this.metadata.read();
+    return this.code;
   }
   set content(newCode: string) {
-	this.metadata.edit();
-	if (this.code === newCode) return;
-	this.code = newCode;
-	this.invalidateModule();
+    this.metadata.edit();
+    if (this.code === newCode) return;
+    this.code = newCode;
+    this.invalidateModule();
   }
 
   constructor(filename = "default.js" as ScriptFilePath, code = "", server = "") {
-	this.filename = filename;
-	this.code = code;
-	this.server = server; // hostname of server this script is on
-	this.metadata = new FileMetadata;
+    this.filename = filename;
+    this.code = code;
+    this.server = server; // hostname of server this script is on
+    this.metadata = new FileMetadata();
   }
 
   /** Invalidates the current script module and related data, e.g. when modifying the file. */
   invalidateModule(): void {
-	// Always clear ram usage
-	this.ramUsage = null;
-	this.ramUsageEntries.length = 0;
-	this.ramCalculationError = null;
-	// Early return if there's already no URL
-	if (!this.mod) return;
-	this.mod = null;
-	for (const dependent of this.dependents) dependent.invalidateModule();
-	this.dependents.clear();
-	// This will be mutated in compile(), but is immutable after that.
-	// (No RunningScripts can access this copy before that point).
-	this.dependencies = new Map();
+    // Always clear ram usage
+    this.ramUsage = null;
+    this.ramUsageEntries.length = 0;
+    this.ramCalculationError = null;
+    // Early return if there's already no URL
+    if (!this.mod) return;
+    this.mod = null;
+    for (const dependent of this.dependents) dependent.invalidateModule();
+    this.dependents.clear();
+    // This will be mutated in compile(), but is immutable after that.
+    // (No RunningScripts can access this copy before that point).
+    this.dependencies = new Map();
   }
 
   /** Gets the ram usage, while also attempting to update it if it's currently null */
   getRamUsage(otherScripts: Map<ScriptFilePath, Script>): number | null {
-	if (this.ramUsage) return this.ramUsage;
-	this.updateRamUsage(otherScripts);
-	return this.ramUsage;
+    if (this.ramUsage) return this.ramUsage;
+    this.updateRamUsage(otherScripts);
+    return this.ramUsage;
   }
 
   /**
@@ -81,24 +81,24 @@ export class Script implements ContentFile {
    * @param {Script[]} otherScripts - Other scripts on the server. Used to process imports
    */
   updateRamUsage(otherScripts: Map<ScriptFilePath, Script>): void {
-	const ramCalc = calculateRamUsage(this.code, otherScripts, this.filename.endsWith(".script"));
-	if (ramCalc.cost && ramCalc.cost >= RamCostConstants.Base) {
-	  this.ramUsage = roundToTwo(ramCalc.cost);
-	  this.ramUsageEntries = ramCalc.entries as RamUsageEntry[];
-	  this.ramCalculationError = null;
-	  return;
-	}
+    const ramCalc = calculateRamUsage(this.code, otherScripts, this.filename.endsWith(".script"));
+    if (ramCalc.cost && ramCalc.cost >= RamCostConstants.Base) {
+      this.ramUsage = roundToTwo(ramCalc.cost);
+      this.ramUsageEntries = ramCalc.entries as RamUsageEntry[];
+      this.ramCalculationError = null;
+      return;
+    }
 
-	this.ramUsage = null;
-	this.ramCalculationError = ramCalc.errorMessage ?? null;
+    this.ramUsage = null;
+    this.ramCalculationError = ramCalc.errorMessage ?? null;
   }
 
   /** Remove script from server. Fails if the provided server isn't the server for this script. */
   deleteFromServer(server: BaseServer): boolean {
-	if (this.server !== server.hostname || server.isRunning(this.filename)) return false;
-	this.invalidateModule();
-	server.scripts.delete(this.filename);
-	return true;
+    if (this.server !== server.hostname || server.isRunning(this.filename)) return false;
+    this.invalidateModule();
+    server.scripts.delete(this.filename);
+    return true;
   }
 
   /** The keys that are relevant in a save file */
@@ -106,12 +106,12 @@ export class Script implements ContentFile {
 
   // Serialize the current object to a JSON save state
   toJSON(): IReviverValue {
-	return Generic_toJSON("Script", this, Script.savedKeys);
+    return Generic_toJSON("Script", this, Script.savedKeys);
   }
 
   // Initializes a Script Object from a JSON save state
   static fromJSON(value: IReviverValue): Script {
-	return Generic_fromJSON(Script, value.data, Script.savedKeys);
+    return Generic_fromJSON(Script, value.data, Script.savedKeys);
   }
 }
 

@@ -86,11 +86,11 @@ export const RamCostConstants = {
 
 function SF4Cost(cost: number): () => number {
   return () => {
-	if (Player.bitNodeN === 4) return cost;
-	const sf4 = Player.sourceFileLvl(4);
-	if (sf4 <= 1) return cost * 16;
-	if (sf4 === 2) return cost * 4;
-	return cost;
+    if (Player.bitNodeN === 4) return cost;
+    const sf4 = Player.sourceFileLvl(4);
+    if (sf4 <= 1) return cost * 16;
+    if (sf4 === 2) return cost * 4;
+    return cost;
   };
 }
 
@@ -256,18 +256,18 @@ const go = {
   opponentNextTurn: 0,
   resetBoardState: 0,
   analysis: {
-	getValidMoves: 8,
-	getChains: 16,
-	getLiberties: 16,
-	getControlledEmptyNodes: 16,
-	getStats: 0,
+    getValidMoves: 8,
+    getChains: 16,
+    getLiberties: 16,
+    getControlledEmptyNodes: 16,
+    getStats: 0,
   },
   cheat: {
-	getCheatSuccessChance: 1,
-	removeRouter: 8,
-	playTwoMoves: 8,
-	repairOfflineNode: 8,
-	destroyNode: 8,
+    getCheatSuccessChance: 1,
+    removeRouter: 8,
+    playTwoMoves: 8,
+    repairOfflineNode: 8,
+    destroyNode: 8,
   },
 } as const;
 
@@ -602,63 +602,63 @@ export const RamCosts: RamCostTree<NSFull> = {
   printRaw: 0,
 
   formulas: {
-	mockServer: 0,
-	mockPlayer: 0,
-	mockPerson: 0,
-	reputation: {
-	  calculateFavorToRep: 0,
-	  calculateRepToFavor: 0,
-	  repFromDonation: 0,
-	},
-	skills: {
-	  calculateSkill: 0,
-	  calculateExp: 0,
-	},
-	hacking: {
-	  hackChance: 0,
-	  hackExp: 0,
-	  hackPercent: 0,
-	  growPercent: 0,
-	  growThreads: 0,
-	  growAmount: 0,
-	  hackTime: 0,
-	  growTime: 0,
-	  weakenTime: 0,
-	},
-	hacknetNodes: {
-	  moneyGainRate: 0,
-	  levelUpgradeCost: 0,
-	  ramUpgradeCost: 0,
-	  coreUpgradeCost: 0,
-	  hacknetNodeCost: 0,
-	  constants: 0,
-	},
-	hacknetServers: {
-	  hashGainRate: 0,
-	  levelUpgradeCost: 0,
-	  ramUpgradeCost: 0,
-	  coreUpgradeCost: 0,
-	  cacheUpgradeCost: 0,
-	  hashUpgradeCost: 0,
-	  hacknetServerCost: 0,
-	  constants: 0,
-	},
-	gang: {
-	  wantedPenalty: 0,
-	  respectGain: 0,
-	  wantedLevelGain: 0,
-	  moneyGain: 0,
-	  ascensionPointsGain: 0,
-	  ascensionMultiplier: 0,
-	},
-	work: {
-	  crimeSuccessChance: 0,
-	  crimeGains: 0,
-	  gymGains: 0,
-	  universityGains: 0,
-	  factionGains: 0,
-	  companyGains: 0,
-	},
+    mockServer: 0,
+    mockPlayer: 0,
+    mockPerson: 0,
+    reputation: {
+      calculateFavorToRep: 0,
+      calculateRepToFavor: 0,
+      repFromDonation: 0,
+    },
+    skills: {
+      calculateSkill: 0,
+      calculateExp: 0,
+    },
+    hacking: {
+      hackChance: 0,
+      hackExp: 0,
+      hackPercent: 0,
+      growPercent: 0,
+      growThreads: 0,
+      growAmount: 0,
+      hackTime: 0,
+      growTime: 0,
+      weakenTime: 0,
+    },
+    hacknetNodes: {
+      moneyGainRate: 0,
+      levelUpgradeCost: 0,
+      ramUpgradeCost: 0,
+      coreUpgradeCost: 0,
+      hacknetNodeCost: 0,
+      constants: 0,
+    },
+    hacknetServers: {
+      hashGainRate: 0,
+      levelUpgradeCost: 0,
+      ramUpgradeCost: 0,
+      coreUpgradeCost: 0,
+      cacheUpgradeCost: 0,
+      hashUpgradeCost: 0,
+      hacknetServerCost: 0,
+      constants: 0,
+    },
+    gang: {
+      wantedPenalty: 0,
+      respectGain: 0,
+      wantedLevelGain: 0,
+      moneyGain: 0,
+      ascensionPointsGain: 0,
+      ascensionMultiplier: 0,
+    },
+    work: {
+      crimeSuccessChance: 0,
+      crimeGains: 0,
+      gymGains: 0,
+      universityGains: 0,
+      factionGains: 0,
+      companyGains: 0,
+    },
   },
 } as const;
 
@@ -670,19 +670,19 @@ export function getRamCost(tree: string[], throwOnUndefined = false): number {
   let obj: RamTreeGeneric = RamCosts;
 
   for (const branch of tree) {
-	const next = obj[branch];
-	if (next === undefined) {
-	  // If no ram cost is defined (e.g. for removed functions), the cost is 0.
-	  const errorText = `No ram cost is defined for (ns.${tree.join(".")})`;
-	  if (throwOnUndefined) throw errorText;
-	  return 0;
-	}
-	if (next && typeof next === "object") {
-	  obj = next;
-	  continue;
-	}
+    const next = obj[branch];
+    if (next === undefined) {
+      // If no ram cost is defined (e.g. for removed functions), the cost is 0.
+      const errorText = `No ram cost is defined for (ns.${tree.join(".")})`;
+      if (throwOnUndefined) throw errorText;
+      return 0;
+    }
+    if (next && typeof next === "object") {
+      obj = next;
+      continue;
+    }
 
-	return typeof next === "function" ? next() : next;
+    return typeof next === "function" ? next() : next;
   }
   throw new Error(`Tried to get ram cost for ns.${tree.join(".")} but the value was an invalid type`);
 }
