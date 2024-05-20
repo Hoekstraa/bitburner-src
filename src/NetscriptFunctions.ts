@@ -1384,15 +1384,6 @@ export const ns: InternalAPI<NSFull> = {
     const server = ctx.workerScript.getServer();
     return server.getContentFile(path)?.metadata.plain() ?? undefined;
   },
-  setFileMetadata: (ctx) => (_filename, _metadata) => {
-    const path = helpers.filePath(ctx, "filename", _filename);
-    if (!hasScriptExtension(path) && !hasTextExtension(path)) {
-      throw helpers.errorMessage(ctx, `Invalid file path or extension: ${_filename}`);
-    }
-    const server = ctx.workerScript.getServer();
-    const file = server.getContentFile(path);
-    if (file) file.metadata = _metadata;
-  },
   peek: (ctx) => (_portNumber) => {
     const portNumber = helpers.portNumber(ctx, _portNumber);
     return peekPort(portNumber);

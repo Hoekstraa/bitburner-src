@@ -6856,19 +6856,6 @@ export interface NS {
   getFileMetadata(filename: string): FileMetadata | void;
 
   /**
-   * Set the metadata of a file.
-   * @remarks
-   * RAM cost: 0 GB
-   *
-   * This function is used to override metadata
-   * of a text file (.txt) or script (.js or .script).
-   *
-   * @param filename - Name of the file to write the metadata to.
-   * @Returns The FileMetadata of the file.
-   */
-  setFileMetadata(filename: string, metadata: FileMetadata): void;
-
-  /**
    * Get a copy of the data from a port without popping it.
    * @remarks
    * RAM cost: 0 GB

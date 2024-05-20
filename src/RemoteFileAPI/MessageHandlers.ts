@@ -36,7 +36,6 @@ export const RFARequestHandler: Record<string, (message: RFAMessage) => void | R
     }
     return error("Invalid file extension", msg);
   },
-
   getFile: function (msg: RFAMessage): RFAMessage {
     if (!isFileLocation(msg.params)) return error("Message misses parameters", msg);
 
@@ -121,8 +120,8 @@ export const RFARequestHandler: Record<string, (message: RFAMessage) => void | R
     const server = GetServer(msg.params.server);
     if (!server) return error("Server hostname invalid", msg);
 
-    const fileList: FileMetadata[] = [...server.scripts, ...server.textFiles].map(([_, file]) => ({
-      filename: file.filename,
+    const fileList: FileMetadata[] = [...server.scripts, ...server.textFiles].map(([filename, file]) => ({
+      filename: filename,
       atime: file.metadata.atime,
       mtime: file.metadata.mtime,
       btime: file.metadata.btime,

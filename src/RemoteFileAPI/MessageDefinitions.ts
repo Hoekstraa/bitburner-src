@@ -8,7 +8,9 @@ export class RFAMessage {
   public error?: string; // Only defined on error
   public id?: number; // ID to keep track of request -> response interaction, undefined with notifications, defined with request/response
 
-  constructor(obj: { method?: string; result?: ResultType; params?: FileMetadata; error?: string; id?: number } = {}) {
+  constructor(
+    obj: { method?: string; result?: ResultType; params?: FileDescription; error?: string; id?: number } = {},
+  ) {
     this.method = obj.method;
     this.result = obj.result;
     this.params = obj.params;
