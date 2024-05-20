@@ -14,47 +14,38 @@ export class TextFile implements ContentFile {
 
   // Used for the Remote File API,
   // to resolve conflicts when synchronizing files outside the game
-  #fileMetadata: FileMetadata;
-
-  get metadata(): object {
-    return {
-      filename: this.filename,
-      timeOfAccess: this.#fileMetadata.timeOfAccess,
-      timeOfModification: this.#fileMetadata.timeOfModification,
-      timeOfBirth: this.#fileMetadata.timeOfBirth,
-    };
-  }
+  metadata: FileMetadata;
 
   // Shared interface on Script and TextFile for accessing content
   get content() {
-    this.#fileMetadata = this.#fileMetadata.read();
-    return this.text;
+	this.metadata.read();
+	return this.text;
   }
   set content(text: string) {
-    this.#fileMetadata = this.#fileMetadata.edit();
-    this.text = text;
+	this.metadata.edit();
+	this.text = text;
   }
 
   constructor(filename = "default.txt" as TextFilePath, txt = "") {
-    this.filename = filename;
-    this.text = txt;
-    this.#fileMetadata = FileMetadata.new();
+	this.filename = filename;
+	this.text = txt;
+	this.metadata = new FileMetadata;
   }
 
   /** Serialize the current file to a JSON save state. */
   toJSON(): IReviverValue {
-    return Generic_toJSON("TextFile", this);
+	return Generic_toJSON("TextFile", this);
   }
 
   deleteFromServer(server: BaseServer): boolean {
-    if (!server.textFiles.has(this.filename)) return false;
-    server.textFiles.delete(this.filename);
-    return true;
+	if (!server.textFiles.has(this.filename)) return false;
+	server.textFiles.delete(this.filename);
+	return true;
   }
 
   /** Initializes a TextFile from a JSON save state. */
   static fromJSON(value: IReviverValue): TextFile {
-    return Generic_fromJSON(TextFile, value.data);
+	return Generic_fromJSON(TextFile, value.data);
   }
 }
 

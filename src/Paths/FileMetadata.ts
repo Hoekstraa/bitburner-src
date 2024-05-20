@@ -1,16 +1,50 @@
+import { Generic_fromJSON, Generic_toJSON, IReviverValue, constructorsForReviver} from "../utils/JSONReviver";
+
 export class FileMetadata {
-  constructor(readonly timeOfAccess: number, readonly timeOfModification: number, readonly timeOfBirth: number) {}
+  /** Time of Access */
+  public atime: number;
+  /** Time of Modification */
+  public mtime: number;
+  /** Time of Birth (creation) */
+  public btime: number;
 
-  static new(): FileMetadata {
-    const now = Date.now();
-    return new FileMetadata(now, now, now);
+  /** Create a FileMetadata with everything set to the current time */
+  constructor() {
+	const now = Date.now();
+	this.atime = now;
+	this.mtime = now;
+	this.btime = now;
   }
 
-  read(): FileMetadata {
-    return new FileMetadata(Date.now(), this.timeOfModification, this.timeOfBirth);
+  /** Change metadate to reflect a read just happened */
+  read() {
+	this.atime = Date.now();
   }
 
-  edit(): FileMetadata {
-    return new FileMetadata(this.timeOfAccess, Date.now(), this.timeOfBirth);
+  /** Change metadate to reflect a write just happened */
+  edit() {
+	this.mtime = Date.now();
   }
+
+  /** Get a plain version of this object */
+  plain() {
+	return {
+	  atime: this.atime,
+	  mtime: this.mtime,
+	  btime: this.btime,
+	};
+  }
+
+  // Serialize the current object to a JSON save state
+  toJSON(): IReviverValue {
+	return Generic_toJSON("FileMetadata", this);
+  }
+
+  // Initializes a Script Object from a JSON save state
+  static fromJSON(value: IReviverValue): FileMetadata {
+	return Generic_fromJSON(FileMetadata, value.data);
+  }
+
 }
+
+constructorsForReviver.FileMetadata = FileMetadata;
