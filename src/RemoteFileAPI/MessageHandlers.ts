@@ -10,6 +10,7 @@ import {
   isFileLocation,
   FileLocation,
   isFileData,
+  FileMetadata,
 } from "./MessageDefinitions";
 
 import libSource from "!!raw-loader!../ScriptEditor/NetscriptDefinitions.d.ts";
@@ -20,105 +21,145 @@ function error(errorMsg: string, { id }: RFAMessage): RFAMessage {
 
 export const RFARequestHandler: Record<string, (message: RFAMessage) => void | RFAMessage> = {
   pushFile: function (msg: RFAMessage): RFAMessage {
-    if (!isFileData(msg.params)) return error("Misses parameters", msg);
+	if (!isFileData(msg.params)) return error("Misses parameters", msg);
 
-    const fileData: FileData = msg.params;
-    const filePath = resolveFilePath(fileData.filename);
-    if (!filePath) return error("Invalid file path", msg);
+	const fileData: FileData = msg.params;
+	const filePath = resolveFilePath(fileData.filename);
+	if (!filePath) return error("Invalid file path", msg);
 
-    const server = GetServer(fileData.server);
-    if (!server) return error("Server hostname invalid", msg);
+	const server = GetServer(fileData.server);
+	if (!server) return error("Server hostname invalid", msg);
 
-    if (hasTextExtension(filePath) || hasScriptExtension(filePath)) {
-      server.writeToContentFile(filePath, fileData.content);
-      return new RFAMessage({ result: "OK", id: msg.id });
-    }
-    return error("Invalid file extension", msg);
+	if (hasTextExtension(filePath) || hasScriptExtension(filePath)) {
+	  server.writeToContentFile(filePath, fileData.content);
+	  return new RFAMessage({ result: "OK", id: msg.id });
+	}
+	return error("Invalid file extension", msg);
   },
 
   getFile: function (msg: RFAMessage): RFAMessage {
-    if (!isFileLocation(msg.params)) return error("Message misses parameters", msg);
+	if (!isFileLocation(msg.params)) return error("Message misses parameters", msg);
 
-    const fileData: FileLocation = msg.params;
-    const filePath = resolveFilePath(fileData.filename);
-    if (!filePath) return error("Invalid file path", msg);
+	const fileData: FileLocation = msg.params;
+	const filePath = resolveFilePath(fileData.filename);
+	if (!filePath) return error("Invalid file path", msg);
 
-    const server = GetServer(fileData.server);
-    if (!server) return error("Server hostname invalid", msg);
+	const server = GetServer(fileData.server);
+	if (!server) return error("Server hostname invalid", msg);
 
-    if (!hasTextExtension(filePath) && !hasScriptExtension(filePath)) return error("Invalid file extension", msg);
-    const file = server.getContentFile(filePath);
-    if (!file) return error("File doesn't exist", msg);
-    return new RFAMessage({ result: file.content, id: msg.id });
+	if (!hasTextExtension(filePath) && !hasScriptExtension(filePath)) return error("Invalid file extension", msg);
+	const file = server.getContentFile(filePath);
+	if (!file) return error("File doesn't exist", msg);
+	return new RFAMessage({ result: file.content, id: msg.id });
+  },
+
+  getFileMetadata: function (msg: RFAMessage): RFAMessage {
+	if (!isFileLocation(msg.params)) return error("Message misses parameters", msg);
+
+	const fileData: FileLocation = msg.params;
+	const filePath = resolveFilePath(fileData.filename);
+	if (!filePath) return error("Invalid file path", msg);
+
+	const server = GetServer(fileData.server);
+	if (!server) return error("Server hostname invalid", msg);
+
+	if (!hasTextExtension(filePath) && !hasScriptExtension(filePath)) return error("Invalid file extension", msg);
+	const file = server.getContentFile(filePath);
+	if (!file) return error("File doesn't exist", msg);
+
+	const result : FileMetadata = {
+	  filename: file.filename,
+	  atime: file.metadata.atime,
+	  mtime: file.metadata.mtime,
+	  btime: file.metadata.btime,
+	};
+	return new RFAMessage({ result: result, id: msg.id });
+
   },
 
   deleteFile: function (msg: RFAMessage): RFAMessage {
-    if (!isFileLocation(msg.params)) return error("Message misses parameters", msg);
+	if (!isFileLocation(msg.params)) return error("Message misses parameters", msg);
 
-    const fileData: FileLocation = msg.params;
-    const filePath = resolveFilePath(fileData.filename);
-    if (!filePath) return error("Invalid filename", msg);
+	const fileData: FileLocation = msg.params;
+	const filePath = resolveFilePath(fileData.filename);
+	if (!filePath) return error("Invalid filename", msg);
 
-    const server = GetServer(fileData.server);
-    if (!server) return error("Server hostname invalid", msg);
+	const server = GetServer(fileData.server);
+	if (!server) return error("Server hostname invalid", msg);
 
-    const result = server.removeFile(filePath);
-    if (result.res) return new RFAMessage({ result: "OK", id: msg.id });
-    return error(result.msg ?? "Failed", msg);
+	const result = server.removeFile(filePath);
+	if (result.res) return new RFAMessage({ result: "OK", id: msg.id });
+	return error(result.msg ?? "Failed", msg);
   },
 
   getFileNames: function (msg: RFAMessage): RFAMessage {
-    if (!isFileServer(msg.params)) return error("Message misses parameters", msg);
+	if (!isFileServer(msg.params)) return error("Message misses parameters", msg);
 
-    const server = GetServer(msg.params.server);
-    if (!server) return error("Server hostname invalid", msg);
+	const server = GetServer(msg.params.server);
+	if (!server) return error("Server hostname invalid", msg);
 
-    const fileNameList: string[] = [...server.textFiles.keys(), ...server.scripts.keys()];
+	const fileNameList: string[] = [...server.textFiles.keys(), ...server.scripts.keys()];
 
-    return new RFAMessage({ result: fileNameList, id: msg.id });
+	return new RFAMessage({ result: fileNameList, id: msg.id });
   },
 
   getAllFiles: function (msg: RFAMessage): RFAMessage {
-    if (!isFileServer(msg.params)) return error("Message misses parameters", msg);
+	if (!isFileServer(msg.params)) return error("Message misses parameters", msg);
 
-    const server = GetServer(msg.params.server);
-    if (!server) return error("Server hostname invalid", msg);
+	const server = GetServer(msg.params.server);
+	if (!server) return error("Server hostname invalid", msg);
 
-    const fileList: FileContent[] = [...server.scripts, ...server.textFiles].map(([filename, file]) => ({
-      filename,
-      content: file.content,
-    }));
-    return new RFAMessage({ result: fileList, id: msg.id });
+	const fileList: FileContent[] = [...server.scripts, ...server.textFiles].map(([filename, file]) => ({
+	  filename,
+	  content: file.content,
+	}));
+	return new RFAMessage({ result: fileList, id: msg.id });
+  },
+
+  getAllFileMetadata: function (msg: RFAMessage): RFAMessage {
+	if (!isFileServer(msg.params)) return error("Message misses parameters", msg);
+
+	const server = GetServer(msg.params.server);
+	if (!server) return error("Server hostname invalid", msg);
+
+	const fileList: FileMetadata[] = [...server.scripts, ...server.textFiles].map(([_, file]) => ({
+	  filename: file.filename,
+	  atime: file.metadata.atime,
+	  mtime: file.metadata.mtime,
+	  btime: file.metadata.btime,
+
+	}));
+	return new RFAMessage({ result: fileList, id: msg.id });
   },
 
   calculateRam: function (msg: RFAMessage): RFAMessage {
-    if (!isFileLocation(msg.params)) return error("Message misses parameters", msg);
-    const fileData: FileLocation = msg.params;
-    const filePath = resolveFilePath(fileData.filename);
-    if (!filePath) return error("Invalid filename", msg);
+	if (!isFileLocation(msg.params)) return error("Message misses parameters", msg);
+	const fileData: FileLocation = msg.params;
+	const filePath = resolveFilePath(fileData.filename);
+	if (!filePath) return error("Invalid filename", msg);
 
-    const server = GetServer(fileData.server);
-    if (!server) return error("Server hostname invalid", msg);
+	const server = GetServer(fileData.server);
+	if (!server) return error("Server hostname invalid", msg);
 
-    if (!hasScriptExtension(filePath)) return error("Filename isn't a script filename", msg);
-    const script = server.scripts.get(filePath);
-    if (!script) return error("File doesn't exist", msg);
-    const ramUsage = script.getRamUsage(server.scripts);
-    if (!ramUsage) return error("Ram cost could not be calculated", msg);
-    return new RFAMessage({ result: ramUsage, id: msg.id });
+	if (!hasScriptExtension(filePath)) return error("Filename isn't a script filename", msg);
+	const script = server.scripts.get(filePath);
+	if (!script) return error("File doesn't exist", msg);
+	const ramUsage = script.getRamUsage(server.scripts);
+	if (!ramUsage) return error("Ram cost could not be calculated", msg);
+	return new RFAMessage({ result: ramUsage, id: msg.id });
   },
 
   getDefinitionFile: function (msg: RFAMessage): RFAMessage {
-    return new RFAMessage({ result: libSource + "", id: msg.id });
+	return new RFAMessage({ result: libSource + "", id: msg.id });
   },
 
   getAllServers: function (msg: RFAMessage): RFAMessage {
-    const servers = GetAllServers().map(({ hostname, hasAdminRights, purchasedByPlayer }) => ({
-      hostname,
-      hasAdminRights,
-      purchasedByPlayer,
-    }));
+	const servers = GetAllServers().map(({ hostname, hasAdminRights, purchasedByPlayer }) => ({
+	  hostname,
+	  hasAdminRights,
+	  purchasedByPlayer,
+	}));
 
-    return new RFAMessage({ result: servers, id: msg.id });
+	return new RFAMessage({ result: servers, id: msg.id });
   },
 };
