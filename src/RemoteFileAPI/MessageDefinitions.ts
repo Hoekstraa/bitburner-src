@@ -9,12 +9,12 @@ export class RFAMessage {
   public id?: number; // ID to keep track of request -> response interaction, undefined with notifications, defined with request/response
 
   constructor(obj: { method?: string; result?: ResultType; params?: FileMetadata; error?: string; id?: number } = {}) {
-	this.method = obj.method;
-	this.result = obj.result;
-	this.params = obj.params;
-	this.error = obj.error;
-	this.id = obj.id;
- }
+    this.method = obj.method;
+    this.result = obj.result;
+    this.params = obj.params;
+    this.error = obj.error;
+    this.id = obj.id;
+  }
 }
 
 type ResultType = string | number | string[] | FileContent[] | RFAServerData[] | FileMetadata | FileMetadata[];
